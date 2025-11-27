@@ -1010,7 +1010,7 @@ Often called also artificial neuron
 In practice, a linear combination of weighted inputs
 
 ---
-
+![](images/machine-learning/perceptron_1.png)
 ### Linear Classification with the Perceptron
 
 Separate examples of two classes
