@@ -833,3 +833,238 @@ For each fraction of data (with decreasing probability of positivity), shows a *
 
 ![](images/machine-learning/spiegazione_cum.png)
 
+## Naive bayes classifier
+
+### Main issues
+
+* Based on **statistics**, in particular, on **Bayes' theorem**.
+* Considers the contribution of **all the attributes**.
+* Assumes that each attribute is **independent** from the others, **given the class** ${}^1$.
+    * This is a very **strong assumption**, rarely verified, but, nevertheless, the method works!
+* Estimate the probabilities with the **frequencies**, as usual.
+
+> ${}^1$ This means $P(d_1 = v_1, d_2 = v_2 | c = c_x) = P(d_1 = v_1 | c = c_x) \cdot P(d_2 = v_2 | c = c_x)$
+
+
+---
+
+## Statistical modeling – Naive bayes classifier: a fictitious example
+
+### The weather/play data
+
+| Play | yes | no | Total | Fraction |
+| :--- | :--- | :--- | :--- | :--- |
+| | 9 | 5 | 14 | 9/14, 5/14 |
+
+| Attribute | Value | yes | no |
+| :--- | :--- | :--- | :--- |
+| **Outlook** | sunny | 2 | 3 |
+| | overcast | 4 | 0 |
+| | rainy | 3 | 2 |
+| **Temperature** | hot | 2 | 2 |
+| | mild | 4 | 2 |
+| | cool | 3 | 1 |
+| **Humidity** | high | 3 | 4 |
+| | normal | 6 | 1 |
+| **Windy** | false | 6 | 2 |
+| | true | 3 | 3 |
+
+---
+
+### Numbers of cases and fractions of the Weather/Play dataset
+
+| Attribute | Value | Fraction (yes) | Fraction (no) |
+| :--- | :--- | :--- | :--- |
+| **Outlook** | sunny | 2/9 | 3/5 |
+| | overcast | 4/9 | 0/5 |
+| | rainy | 3/9 | 2/5 |
+| **Temperature** | hot | 2/9 | 2/5 |
+| | mild | 4/9 | 2/5 |
+| | cool | 3/9 | 1/5 |
+| **Humidity** | high | 3/9 | 4/5 |
+| | normal | 6/9 | 1/5 |
+| **Windy** | false | 6/9 | 2/5 |
+| | true | 3/9 | 3/5 |
+
+---
+
+### A new sample needs classification
+
+* **Outlook:** sunny, **Temperature:** cool, **Humidity:** high, **Windy:** true, **Play:** ?
+* Treat the five features and the overall likelihood that **play** is **yes** or **no** as equally important.
+    * They are independent pieces of evidence; the overall likelihood is obtained by **multiplying the probabilities** (i.e., the frequencies).
+
+$$\text{likelihood of yes} = \frac{2}{9} \cdot \frac{3}{9} \cdot \frac{3}{9} \cdot \frac{3}{9} \cdot \frac{9}{14} \approx 0.0053$$
+
+$$\text{likelihood of no} = \frac{3}{5} \cdot \frac{1}{5} \cdot \frac{4}{5} \cdot \frac{3}{5} \cdot \frac{5}{14} \approx 0.0206$$
+
+* **Normalize to 1**:
+
+$$P(\text{yes}) = \frac{0.0053}{0.0053 + 0.0206} \approx 20.5\%$$
+
+$$P(\text{no}) = \frac{0.0206}{0.0053 + 0.0206} \approx 79.5\%$$
+
+* **no** is more likely than **yes**, about four times.
+
+---
+
+## Statistical modeling – Naive bayes classifier: the bayes method
+
+### The Bayes' theorem
+
+Given a **hypothesis** $H$ and an **evidence** $E$ that bears on that hypothesis:
+
+$$P(H | E) = \frac{P(E | H) P(H)}{P(E)}$$
+
+* The hypothesis is the **class**, say $c$, the evidence is the **tuple of values** of the element to be classified.
+* We can split the evidence into pieces, one per attribute, and, if the attributes are **independent** inside each class:
+
+$$P(c | E) = \frac{P(E_1 | c) \cdot P(E_2 | c) \cdot P(E_3 | c) \cdot P(E_4 | c) \cdot P(c)}{P(E)}$$
+
+---
+
+### The Naive Bayes method
+
+* Compute the **conditional probabilities** from examples.
+* Apply the theorem.
+* The **denominator** $P(E)$ is the same for all the classes and is eliminated by the **normalization** step.
+* It is called **naive** since the assumption of independence between attributes is quite simplistic.
+* Nevertheless, it works quite well in many cases.
+
+---
+
+### Problem
+
+What if value $v$ of attribute $d$ never appears in the elements of class $c$?
+
+* In this case $P(d=v | c) = 0$.
+* This makes the probability of the class for that evidence **drop to zero**.
+* In practice, this case is quite common, in particular in a domain with many attributes and many distinct values.
+* An **alternative solution is needed**.
+
+---
+
+### Values not represented in a class – Laplace smoothing
+
+* $\alpha$ – **Smoothing parameter**, typical value is **1**.
+* $af(d=v_i, c)$ – **Absolute frequency** of value $v_i$ in attribute $d$ over class $c$.
+* $V$ – **Number of distinct values** in attribute $d$ over the dataset.
+* $af(c)$ – **Absolute frequency** of class $c$ in the dataset.
+
+$$\text{Smoothed frequency } sf(d=v_i, c) = \frac{af(d=v_i, c) + \alpha}{af(c) + \alpha V}$$
+
+* With $\alpha=0$ we obtain the standard, unsmoothed formula.
+* Higher values of $\alpha$ give more importance to the **prior probabilities** for the values of $d$ w.r.t. the evidence given by the examples.
+  
+![](images/machine-learning/spiegazione_laplace_smoothing.png)
+---
+
+## Statistical modeling – Naive bayes classifier: missing values
+
+### Missing values
+
+* They **do not affect the model**, it is not necessary to discard an instance with missing value(s).
+
+* **Test instance:**
+    * The calculation of the likelihood simply **omits this attribute**.
+    * The likelihood will be higher for all the classes, but this is compensated by the **normalization**.
+
+* **Train instance:**
+    * The record is simply **not included in the frequency counts** for that attribute.
+    * The descriptive statistics are based on the number of values that occur, rather than on the number of instances.
+
+### Missing Values in Naive Bayes
+
+**General Rule:** Missing values do not affect the model; no need to discard instances.
+
+**For Test Instances:**
+- Calculation of likelihood omits the missing attribute
+- Higher likelihood for all classes, compensated by normalization
+
+**For Train Instances:**
+- Record not included in frequency counts for that attribute
+- Descriptive statistics based on number of values that occur, not number of instances
+
+---
+
+### Numeric Values in Naive Bayes
+
+**Approach:** Frequency-based method inapplicable; assumes Gaussian distribution.
+
+**Calculation:**
+- Compute mean ($\mu$) and variance ($\sigma^2$) for each numeric attribute per class
+- Use Gaussian probability density function:
+
+$$f(x) = \frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$
+
+**Important Notes:**
+- Probability density ≠ probability (probability of exact value in continuous domain is zero)
+- Density value represents probability variable lies in small interval around that value
+- Precision factor same for all classes, so can be disregarded
+- If numeric values missing, mean and standard deviation based only on present values
+
+### The Linear Perceptron
+
+Often called also artificial neuron
+
+In practice, a linear combination of weighted inputs
+
+---
+
+### Linear Classification with the Perceptron
+
+Separate examples of two classes
+
+For a dataset with numeric attributes
+
+Learn a hyperplane such that all the positives lay on one side and all the negatives on the other
+
+---
+
+### The Hyperplane
+
+The hyperplane is described by a set of weights $w_0,...,w_D$ in a linear equation on the data attributes $x_0,...,x_D$
+
+The fictitious attribute $x_0 = 1$ is added to allow a hyperplane that does not pass through the origin
+
+There are either none or infinite such hyperplanes
+
+$$w_0 \cdot x_0 + w_1 \cdot x_1 + ... + w_D \cdot x_D \begin{cases} >0 & \Rightarrow \text{positive} \\ <0 & \Rightarrow \text{negative} \end{cases}$$
+
+---
+
+### Training the Perceptron
+
+**Learning the hyperplane**
+
+**Algorithm 1: Perceptron learning of a separating hyperplane**
+
+**Data:** Training set $X = \{(x_i, y_i)\}$  
+**Result:** Weight vector $w$ defining the hyperplane
+
+![Perceptron Algorithm](images/machine-learning/perceptron_algorithm_1.jpeg)
+---
+
+### Linear Perceptron Convergence
+
+Each change of weights moves the hyperplane towards the misclassified instance, consider the equation after the weight change for a positive instance $x_i$ which was classified as negative:
+
+$$(w_0 + x_{i0}) \cdot x_{i0} + (w_1 + x_{i1}) \cdot x_{i1} + ... + (w_D + x_{iD}) \cdot x_{iD}$$
+
+The result of the equation is increased by a positive amount:
+
+$$x_{i0}^2 + ... + x_{iD}^2$$
+
+Therefore the result will be less negative or, possibly, even positive
+
+Analogously for a negative instance which was classified as positive
+
+---
+
+### Linear Perceptron Algorithm Termination
+
+The corrections are incremental and can interfere with previous updates
+
+The algorithm converges if the dataset is linearly separable, otherwise it does not terminate
+
+For practical applicability it is necessary to set an upper bound to the iterations
