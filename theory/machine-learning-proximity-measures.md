@@ -1,4 +1,12 @@
- # Proximity measures
+ > 
+> **Subject**: ML slides pack - proximity measures by Claudio Sartori
+> 
+> **Course:** Artificial Intelligence - LM
+> 
+>**Department**: DISI (Department of Computer Science and Engineering) - University of Bologna, Italy
+>
+> **Author**: Roberto Zanolli
+# Proximity measures
 
 Proximity measures are numerical measures of how alike, different or distant two data objects are.
 This is fundamental in many applications for ML, in particular clustering.
@@ -26,7 +34,7 @@ Refers to a similarity or dissimilarity.
 
 ### Euclidean distance – L2
 
-$$dist = \sqrt{\sum_{d=1}^{D} (p_d - q_d)^2}$$
+> $$dist = \sqrt{\sum_{d=1}^{D} (p_d - q_d)^2}$$
 
 Where $D$ is the number of dimensions (attributes) and $p_d$ and $q_d$ are, respectively, the $d$-th attributes (components) of data objects $p$ and $q$
 
@@ -34,7 +42,7 @@ Where $D$ is the number of dimensions (attributes) and $p_d$ and $q_d$ are, resp
 
 ### Minkowski distance – Lr
 
-$$dist = \left( \sum_{d=1}^{D} |p_d - q_d|^r \right)^{\frac{1}{r}}$$
+> $$dist = \left( \sum_{d=1}^{D} |p_d - q_d|^r \right)^{\frac{1}{r}}$$
 
 Where $D$ is the number of dimensions (attributes) and $p_d$ and $q_d$ are, respectively, the $d$-th attributes (components) of data objects $p$ and $q$
 
@@ -44,14 +52,14 @@ Where $D$ is the number of dimensions (attributes) and $p_d$ and $q_d$ are, resp
 
 Common choices for r:
 
-**$r = 1$**: also named city block, Manhattan, $L_1$ norm
+**$r = 1$**: also named city block, **Manhattan**, $L_1$ norm
 - it is the best way to discriminate between zero distance and near zero distance
 - a 1 change on any coordinate causes a 1 change in the distance (unlike Euclidean where the effect is diluted by the square root of the sum of squares)
 - works better than Euclidean in very high dimensional spaces
 
-**$r = 2$**: Euclidean, $L_2$ norm
+**$r = 2$**: **Euclidean**, $L_2$ norm
 
-**$r = \infty$**: also named Chebyshev, supremum, $L_{max}$ norm, $L_\infty$ norm
+**$r = \infty$**: also named **Chebyshev**, supremum, $L_{max}$ norm, $L_\infty$ norm
 - considers only the dimension where the difference is maximum
 - provides a simplified evaluation, disregarding the dimensions with lower differences
 
@@ -247,15 +255,15 @@ Two users' activity on a website (clicks per section):
 
 ![](images/machine-learning/decision_guide_measures.png)
 
-**Rule of thumb:**
-- Manhattan: "How different are the values?"
-- Cosine: "How similar are the patterns?"
+> **Rule of thumb:**
+>- Manhattan: "How different are the values?"
+>- Cosine: "How similar are the patterns?"
 
 ---
 
 ### Jaccard similarity
 
-**Definition:** measures overlap between two sets relative to their union
+**Definition:** measures **overlap between two sets relative to their union**
 
 **Use cases:**
 - document similarity in information retrieval

@@ -1,6 +1,14 @@
-#### TIPS
-- w.r.t means "with respect to"
-
+> 
+> **Subject**: ML slides pack - data, classification1 and classification2 by Claudio Sartori
+>
+> **Course:** Artificial Intelligence - LM
+> 
+>**Department**: DISI (Department of Computer Science and Engineering) - University of Bologna, Italy
+>
+> **Author**: Roberto Zanolli
+> 
+> **TIPS**
+> - w.r.t means "with respect to"
 # Data
 ## Data types
 
@@ -90,7 +98,6 @@ Not all transformations are allowed according to the data type
 	*  asymmetric values of the same type
 - Graph data
 	- e.g: all XML-like files like html pages
-
 ## Noise
 - Original data are **modified** or there is a **mix of interesting and uninteresting** data
 
@@ -103,9 +110,11 @@ Not all transformations are allowed according to the data type
 
 $Q1$: first quartile, $Q3$: third quartile,
 
-$IQR = Q3 - Q1$
-$Lower$  $boundary$ $= Q1 - IQR \times 1.5$
-$Upper$ $boundary$ $= Q3 + IQR \times 1.5$
+>$IQR = Q3 - Q1$
+>
+>$Lower$  $boundary$ $= Q1 - IQR \times 1.5$
+>
+>$Upper$ $boundary$ $= Q3 + IQR \times 1.5$
 
 *Consider outlier the values out of the whiskers*
 The upper whisker will extend to last datum less than $Q3 + 1.5 \times IQR$
@@ -251,7 +260,7 @@ $$P(v_1) = p_1, P(v_2) = p_2, ..., P(v_V) = p_V$$
 
 The best coding allows the transmission with an average number of bits given by:
 
-$$H(X) = -\sum_{j} p_j \log_2(p_j)$$
+> $$H(X) = -\sum_{j} p_j \log_2(p_j)$$
 
 $H(X)$ is the entropy of the information source $X$
 
@@ -389,10 +398,10 @@ A decision tree is a hypothesis of the relationship between the predictor attrib
 - $error_{train}(h)$ = error of the hypothesis on the training set
 - $error_X(h)$ = error of the hypothesis on the entire dataset
 
-**Overfitting Condition:**
-$h$ overfits the training set if there is an alternative hypothesis $h_1$ such that:
-$$error_{train}(h) < error_{train}(h_1)$$
-$$error_X(h) > error_X(h_1)$$
+> **Overfitting Condition:**
+> $h$ overfits the training set if there is an alternative hypothesis $h_1$ such that:
+> $$error_{train}(h) < error_{train}(h_1)$$
+> $$error_X(h) > error_X(h_1)$$
 #### Causes for overfitting
 
 1. **Presence of noise**
@@ -622,7 +631,7 @@ plt.show()
 ```
 ## Confusion matrix metrics
 
-$$\text{Success rate (Accuracy)} = \frac{TP + TN}{N_{test}}$$
+> $$\text{Success rate (Accuracy)} = \frac{TP + TN}{N_{test}}$$
 
 $$\text{Error rate} = 1 - \text{Success rate}$$
 
@@ -647,16 +656,16 @@ $$\text{Error rate} = 1 - \text{Success rate}$$
 
 ### Summary of measures
 
-$$\text{Precision} = \frac{TP}{TP + FP}$$
+> $$\text{Precision} = \frac{TP}{TP + FP}$$
 - The rate of true positives among the positive classifications
 
-$$\text{Recall (Sensitivity)} = \frac{TP}{TP + FN}$$
+> $$\text{Recall (Sensitivity)} = \frac{TP}{TP + FN}$$
 - The rate of the positives that we can catch
 
-$$\text{Specificity} = \frac{TN}{TN + FP}$$
+> $$\text{Specificity} = \frac{TN}{TN + FP}$$
 - The rate of the negatives that we can catch
 
-$$\text{F1-score} = 2 \cdot \frac{\text{precision} \cdot \text{recall}}{\text{precision} + \text{recall}}$$
+> $$\text{F1-score} = 2 \cdot \frac{\text{precision} \cdot \text{recall}}{\text{precision} + \text{recall}}$$
 - The harmonic mean of precision and recall (a.k.a. balanced F-score)
 
 ### Which measure should we use?
@@ -734,7 +743,7 @@ $$\kappa = \frac{2 \times (TP \times TN - FP \times FN)}{(TP + FP)(FP + TN) + (T
 - **-1**: Total disagreement (perfect swap between predictions and true labels; only possible with 2 classes if all have non-zero counts)
 - **0**: Random agreement
 
-### Matthews Correlation Coefficient (MCC)
+### Matthews correlation coefficient (MCC)
 
 A metric for evaluating binary classifications, especially effective when **classes are imbalanced**. It measures the correlation between observed and predicted classifications.
 
@@ -742,10 +751,10 @@ $$MCC = \frac{TP \times TN - FP \times FN}{\sqrt{(TP + FP)(TP + FN)(TN + FP)(TN 
 
 **Properties:**
 - **Range:** $-1$ to $1$
-  - **1**: Perfect prediction
-  - **0**: Prediction no better than random
-  - **-1**: Complete disagreement
-- **Balanced evaluation**: Particularly useful for imbalanced datasets since it accounts for all components of the confusion matrix
+  - **1**: perfect prediction
+  - **0**: prediction no better than random
+  - **-1**: complete disagreement
+- **Balanced evaluation**: particularly useful for imbalanced datasets since it accounts for all components of the confusion matrix
 
 ---
 
@@ -754,25 +763,25 @@ $$MCC = \frac{TP \times TN - FP \times FN}{\sqrt{(TP + FP)(TP + FN)(TN + FP)(TN 
 Our decisions are driven by predictions → **bad predictions imply a cost**.
 
 **Examples:**
-- Granting a loan to a bad payer costs more than denying a loan to a good payer
-- A false "oil spill" alarm is less expensive than an undetected spill
-- A wrong "fault prediction" in an industrial plant is generally less expensive than an unexpected fault
-- In direct marketing, sending advertisement without redemption is less harmful than ignoring a promising customer
+- granting a loan to a bad payer costs more than denying a loan to a good payer
+- a false "oil spill" alarm is less expensive than an undetected spill
+- a wrong "fault prediction" in an industrial plant is generally less expensive than an unexpected fault
+- in direct marketing, sending advertisement without redemption is less harmful than ignoring a promising customer
 
 ### Cost sensitive learning
 
-**Goal:** Weight the errors to account for different costs of misclassification.
+**Goal:** weight the errors to account for different costs of misclassification.
 
-**Alternative 1: Alter class proportions**
-- Duplicate examples for which the classification error cost is higher
-- The classifier becomes more able to classify the costly classes correctly
-- Also useful when classes are **imbalanced** (frequencies of class labels in $X$ are not equal)
+**Alternative 1: alter class proportions**
+- duplicate examples for which the classification error cost is higher
+- the classifier becomes more able to classify the costly classes correctly
+- also useful when classes are **imbalanced** (frequencies of class labels in $X$ are not equal)
 
-**Alternative 2: Add weights to instances**
-- Some learning schemes allow instance weighting
-- Example: `DecisionTreeClassifier` in scikit-learn has the `class_weight` hyperparameter:
-  - Define a dictionary with one key per class specifying the relative weight
-  - The `'balanced'` option balances classes automatically
+**Alternative 2: add weights to instances**
+- some learning schemes allow instance weighting
+- example: `DecisionTreeClassifier` in scikit-learn has the `class_weight` hyperparameter:
+  - define a dictionary with one key per class specifying the relative weight
+  - the `'balanced'` option balances classes automatically
 
 ```python
 from sklearn.tree import DecisionTreeClassifier
@@ -788,21 +797,21 @@ model = DecisionTreeClassifier(class_weight='balanced')
 Many classifiers produce, rather than a class label (**crisp prediction**), a tuple of probabilities, one for each possible class (**probabilistic** or **soft prediction**).
 
 **When to use each:**
-- **Crisp output**: When an immediate decision is required
-- **Probabilistic output**: When classification is part of a process including several evaluation/action steps
+- **Crisp output**: when an immediate decision is required
+- **Probabilistic output**: when classification is part of a process including several evaluation/action steps
 
 #### Crisp values sometimes hide probabilities
 
 When a leaf of a decision tree has non-zero counts for minority classes, probabilities can be assigned based on the fractions of training data elements in that leaf belonging to each class.
 
-*Note: Since leaves often have small numbers of examples and/or minority classes with frequencies near zero, **smoothing techniques** are used to adjust the probabilities.*
+*Note: since leaves often have small numbers of examples and/or minority classes with frequencies near zero, **smoothing techniques** are used to adjust the probabilities.*
 
 #### Converting probabilities to crisp values
 
 | Case | Technique |
 |------|-----------|
-| **Binary** | Set a threshold for the positive class |
-| **Multiclass** | Output the class with the maximum probability |
+| **Binary** | set a threshold for the positive class |
+| **Multiclass** | output the class with the maximum probability |
 
 ---
 
@@ -811,17 +820,17 @@ When a leaf of a decision tree has non-zero counts for minority classes, probabi
 Used to evaluate various scenarios depending on the application.
 
 **Process:**
-1. Apply a probabilistic classification scheme to a dataset with positives
-2. Sort all classified elements by **decreasing probability** of positive class
-3. Create a chart with axes: $x$ = sample size, $y$ = number of positives in sample
+1. apply a probabilistic classification scheme to a dataset with positives
+2. sort all classified elements by **decreasing probability** of positive class
+3. create a chart with axes: $x$ = sample size, $y$ = number of positives in sample
 
 *Only the **rank** is important, not the specific probability.*
 
-#### Cumulative Gains chart
+#### Cumulative gains chart
 
-- The **straight line** plots the number of positives obtained with a **random choice** of a sample
-- The **curve** plots the number of positives obtained drawing a fraction of test data with **decreasing probability**
-- The **larger the area** between the two curves, the **better** the classification model
+- the **straight line** plots the number of positives obtained with a **random choice** of a sample
+- the **curve** plots the number of positives obtained drawing a fraction of test data with **decreasing probability**
+- the **larger the area** between the two curves, the **better** the classification model
 
 #### Lift chart
 
@@ -833,22 +842,22 @@ For each fraction of data (with decreasing probability of positivity), shows a *
 
 ![](images/machine-learning/spiegazione_cum.png)
 
-## Naive bayes classifier
+## Naive Bayes classifier
 
 ### Main issues
 
-* Based on **statistics**, in particular, on **Bayes' theorem**.
-* Considers the contribution of **all the attributes**.
-* Assumes that each attribute is **independent** from the others, **given the class** ${}^1$.
-    * This is a very **strong assumption**, rarely verified, but, nevertheless, the method works!
-* Estimate the probabilities with the **frequencies**, as usual.
+* based on **statistics**, in particular, on **Bayes' theorem**.
+* considers the contribution of **all the attributes**.
+* assumes that each attribute is **independent** from the others, **given the class** ${}^1$.
+    * this is a very **strong assumption**, rarely verified, but, nevertheless, the method works!
+* estimate the probabilities with the **frequencies**, as usual.
 
 > ${}^1$ This means $P(d_1 = v_1, d_2 = v_2 | c = c_x) = P(d_1 = v_1 | c = c_x) \cdot P(d_2 = v_2 | c = c_x)$
 
 
 ---
 
-## Statistical modeling – Naive bayes classifier: a fictitious example
+## Statistical modeling – Naive Bayes classifier: a fictitious example
 
 ### The weather/play data
 
@@ -871,7 +880,7 @@ For each fraction of data (with decreasing probability of positivity), shows a *
 
 ---
 
-### Numbers of cases and fractions of the Weather/Play dataset
+### Numbers of cases and fractions of the weather/play dataset
 
 | Attribute | Value | Fraction (yes) | Fraction (no) |
 | :--- | :--- | :--- | :--- |
@@ -891,14 +900,14 @@ For each fraction of data (with decreasing probability of positivity), shows a *
 ### A new sample needs classification
 
 * **Outlook:** sunny, **Temperature:** cool, **Humidity:** high, **Windy:** true, **Play:** ?
-* Treat the five features and the overall likelihood that **play** is **yes** or **no** as equally important.
-    * They are independent pieces of evidence; the overall likelihood is obtained by **multiplying the probabilities** (i.e., the frequencies).
+* treat the five features and the overall likelihood that **play** is **yes** or **no** as equally important.
+    * they are independent pieces of evidence; the overall likelihood is obtained by **multiplying the probabilities** (i.e., the frequencies).
 
 $$\text{likelihood of yes} = \frac{2}{9} \cdot \frac{3}{9} \cdot \frac{3}{9} \cdot \frac{3}{9} \cdot \frac{9}{14} \approx 0.0053$$
 
 $$\text{likelihood of no} = \frac{3}{5} \cdot \frac{1}{5} \cdot \frac{4}{5} \cdot \frac{3}{5} \cdot \frac{5}{14} \approx 0.0206$$
 
-* **Normalize to 1**:
+* **normalize to 1**:
 
 $$P(\text{yes}) = \frac{0.0053}{0.0053 + 0.0206} \approx 20.5\%$$
 
@@ -908,7 +917,7 @@ $$P(\text{no}) = \frac{0.0206}{0.0053 + 0.0206} \approx 79.5\%$$
 
 ---
 
-## Statistical modeling – Naive bayes classifier: the bayes method
+## Statistical modeling – Naive Bayes classifier: the Bayes method
 
 ### The Bayes' theorem
 
@@ -916,8 +925,8 @@ Given a **hypothesis** $H$ and an **evidence** $E$ that bears on that hypothesis
 
 $$P(H | E) = \frac{P(E | H) P(H)}{P(E)}$$
 
-* The hypothesis is the **class**, say $c$, the evidence is the **tuple of values** of the element to be classified.
-* We can split the evidence into pieces, one per attribute, and, if the attributes are **independent** inside each class:
+* the hypothesis is the **class**, say $c$, the evidence is the **tuple of values** of the element to be classified.
+* we can split the evidence into pieces, one per attribute, and, if the attributes are **independent** inside each class:
 
 $$P(c | E) = \frac{P(E_1 | c) \cdot P(E_2 | c) \cdot P(E_3 | c) \cdot P(E_4 | c) \cdot P(c)}{P(E)}$$
 
@@ -925,11 +934,11 @@ $$P(c | E) = \frac{P(E_1 | c) \cdot P(E_2 | c) \cdot P(E_3 | c) \cdot P(E_4 | c)
 
 ### The Naive Bayes method
 
-* Compute the **conditional probabilities** from examples.
-* Apply the theorem.
-* The **denominator** $P(E)$ is the same for all the classes and is eliminated by the **normalization** step.
-* It is called **naive** since the assumption of independence between attributes is quite simplistic.
-* Nevertheless, it works quite well in many cases.
+* compute the **conditional probabilities** from examples.
+* apply the theorem.
+* the **denominator** $P(E)$ is the same for all the classes and is eliminated by the **normalization** step.
+* it is called **naive** since the assumption of independence between attributes is quite simplistic.
+* nevertheless, it works quite well in many cases.
 
 ---
 
@@ -937,73 +946,72 @@ $$P(c | E) = \frac{P(E_1 | c) \cdot P(E_2 | c) \cdot P(E_3 | c) \cdot P(E_4 | c)
 
 What if value $v$ of attribute $d$ never appears in the elements of class $c$?
 
-* In this case $P(d=v | c) = 0$.
-* This makes the probability of the class for that evidence **drop to zero**.
-* In practice, this case is quite common, in particular in a domain with many attributes and many distinct values.
-* An **alternative solution is needed**.
+* in this case $P(d=v | c) = 0$.
+* this makes the probability of the class for that evidence **drop to zero**.
+* in practice, this case is quite common, in particular in a domain with many attributes and many distinct values.
+* an **alternative solution is needed**.
 
 ---
 
 ### Values not represented in a class – Laplace smoothing
 
-* $\alpha$ – **Smoothing parameter**, typical value is **1**.
-* $af(d=v_i, c)$ – **Absolute frequency** of value $v_i$ in attribute $d$ over class $c$.
-* $V$ – **Number of distinct values** in attribute $d$ over the dataset.
-* $af(c)$ – **Absolute frequency** of class $c$ in the dataset.
+>* $\alpha$ – **smoothing parameter**, typical value is **1**.
+>* $af(d=v_i, c)$ – **absolute frequency** of value $v_i$ in attribute $d$ over class $c$.
+>* $V$ – **number of distinct values** in attribute $d$ over the dataset.
+>* $af(c)$ – **absolute frequency** of class $c$ in the dataset.
+> $$\text{Smoothed frequency } sf(d=v_i, c) = \frac{af(d=v_i, c) + \alpha}{af(c) + \alpha V}$$
 
-$$\text{Smoothed frequency } sf(d=v_i, c) = \frac{af(d=v_i, c) + \alpha}{af(c) + \alpha V}$$
-
-* With $\alpha=0$ we obtain the standard, unsmoothed formula.
-* Higher values of $\alpha$ give more importance to the **prior probabilities** for the values of $d$ w.r.t. the evidence given by the examples.
+* with $\alpha=0$ we obtain the standard, unsmoothed formula.
+* higher values of $\alpha$ give more importance to the **prior probabilities** for the values of $d$ w.r.t. the evidence given by the examples.
   
 ![](images/machine-learning/spiegazione_laplace_smoothing.png)
 ---
 
-## Statistical modeling – Naive bayes classifier: missing values
+## Statistical modeling – Naive Bayes classifier: missing values
 
 ### Missing values
 
-* They **do not affect the model**, it is not necessary to discard an instance with missing value(s).
+* they **do not affect the model**, it is not necessary to discard an instance with missing value(s).
 
 * **Test instance:**
-    * The calculation of the likelihood simply **omits this attribute**.
-    * The likelihood will be higher for all the classes, but this is compensated by the **normalization**.
+    * the calculation of the likelihood simply **omits this attribute**.
+    * the likelihood will be higher for all the classes, but this is compensated by the **normalization**.
 
 * **Train instance:**
-    * The record is simply **not included in the frequency counts** for that attribute.
-    * The descriptive statistics are based on the number of values that occur, rather than on the number of instances.
+    * the record is simply **not included in the frequency counts** for that attribute.
+    * the descriptive statistics are based on the number of values that occur, rather than on the number of instances.
 
-### Missing Values in Naive Bayes
+### Missing values in Naive Bayes
 
-**General Rule:** Missing values do not affect the model; no need to discard instances.
+**General rule:** missing values do not affect the model; no need to discard instances.
 
-**For Test Instances:**
-- Calculation of likelihood omits the missing attribute
-- Higher likelihood for all classes, compensated by normalization
+**For test instances:**
+- calculation of likelihood omits the missing attribute
+- higher likelihood for all classes, compensated by normalization
 
-**For Train Instances:**
-- Record not included in frequency counts for that attribute
-- Descriptive statistics based on number of values that occur, not number of instances
+**For train instances:**
+- record not included in frequency counts for that attribute
+- descriptive statistics based on number of values that occur, not number of instances
 
 ---
 
-### Numeric Values in Naive Bayes
+### Numeric values in Naive Bayes
 
-**Approach:** Frequency-based method inapplicable; assumes Gaussian distribution.
+**Approach:** frequency-based method inapplicable; assumes Gaussian distribution.
 
 **Calculation:**
-- Compute mean ($\mu$) and variance ($\sigma^2$) for each numeric attribute per class
-- Use Gaussian probability density function:
+- compute mean ($\mu$) and variance ($\sigma^2$) for each numeric attribute per class
+- use Gaussian probability density function:
 
 $$f(x) = \frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$
 
-**Important Notes:**
-- Probability density ≠ probability (probability of exact value in continuous domain is zero)
-- Density value represents probability variable lies in small interval around that value
-- Precision factor same for all classes, so can be disregarded
-- If numeric values missing, mean and standard deviation based only on present values
+**Important notes:**
+- probability density ≠ probability (probability of exact value in continuous domain is zero)
+- density value represents probability variable lies in small interval around that value
+- precision factor same for all classes, so can be disregarded
+- if numeric values missing, mean and standard deviation based only on present values
 
-### The Linear Perceptron
+### The linear perceptron
 
 Often called also artificial neuron
 
@@ -1011,7 +1019,7 @@ In practice, a linear combination of weighted inputs
 
 ---
 ![](images/machine-learning/perceptron_1.png)
-### Linear Classification with the Perceptron
+### Linear classification with the perceptron
 
 Separate examples of two classes
 
@@ -1021,7 +1029,7 @@ Learn a hyperplane such that all the positives lay on one side and all the negat
 
 ---
 
-### The Hyperplane
+### The hyperplane
 
 The hyperplane is described by a set of weights $w_0,...,w_D$ in a linear equation on the data attributes $x_0,...,x_D$
 
@@ -1029,15 +1037,15 @@ The fictitious attribute $x_0 = 1$ is added to allow a hyperplane that does not 
 
 There are either none or infinite such hyperplanes
 
-$$w_0 \cdot x_0 + w_1 \cdot x_1 + ... + w_D \cdot x_D \begin{cases} >0 & \Rightarrow \text{positive} \\ <0 & \Rightarrow \text{negative} \end{cases}$$
+>$$w_0 \cdot x_0 + w_1 \cdot x_1 + ... + w_D \cdot x_D \begin{cases} >0 & \Rightarrow \text{positive} \\ <0 & \Rightarrow \text{negative} \end{cases}$$
 
 ---
 
-### Training the Perceptron
+### Training the perceptron
 
 **Learning the hyperplane**
 
-**Algorithm 1: Perceptron learning of a separating hyperplane**
+**Algorithm 1: perceptron learning of a separating hyperplane**
 
 **Data:** Training set $X = \{(x_i, y_i)\}$  
 **Result:** Weight vector $w$ defining the hyperplane
@@ -1045,7 +1053,7 @@ $$w_0 \cdot x_0 + w_1 \cdot x_1 + ... + w_D \cdot x_D \begin{cases} >0 & \Righta
 ![Perceptron Algorithm](images/machine-learning/perceptron_algorithm_1.jpeg)
 ---
 
-### Linear Perceptron Convergence
+### Linear perceptron convergence
 
 Each change of weights moves the hyperplane towards the misclassified instance, consider the equation after the weight change for a positive instance $x_i$ which was classified as negative:
 
@@ -1061,10 +1069,154 @@ Analogously for a negative instance which was classified as positive
 
 ---
 
-### Linear Perceptron Algorithm Termination
+### Linear perceptron algorithm termination
 
 The corrections are incremental and can interfere with previous updates
 
 The algorithm converges if the dataset is linearly separable, otherwise it does not terminate
 
 For practical applicability it is necessary to set an upper bound to the iterations
+
+
+# Support vector machines (SVM) for binary classification
+
+**Problems with high-dimensional data:**
+- method becomes intractable for reasonable number of variables
+- with 10 variables and maximum order 5: need ~2000 coefficients
+- extremely prone to overfitting if number of parameters approaches number of examples
+
+---
+
+### Maximum margin hyperplane
+
+**Linear perceptron limitation:**
+- accepts any hyperplane that separates training classes
+- some hyperplanes are better for classifying new items
+
+**SVM advantage:**
+- maximum margin hyperplane gives greatest separation between classes
+
+---
+![](images/machine-learning/hyperplanes_1.png)
+### Key ideas
+
+**Computational learning theory:**
+- efficient separability of non-linear functions using kernel functions
+- optimization rather than greedy search
+
+**Statistical learning:**
+- prediction function search modeled as function estimation problem
+
+**Convex hull properties:**
+- tightest enclosing convex polygon for a set of points
+- if dataset linearly separable: convex hulls of classes don't intersect
+  
+> Memo: *convex hull* it's the tightest possible convex boundary that encloses all points.
+
+#### details
+**Maximum margin hyperplane:**
+- as far as possible from both hulls
+- perpendicular bisector of shortest line connecting the hulls
+- subset of points sufficient to define hull: **support vectors**
+
+**Support vectors:**
+- training set elements that would change the solution if removed
+  
+
+![](images/machine-learning/support_vectors_1.png)
+
+> **Mathematical formulation:**
+Constrained quadratic optimization problem:
+> $$\max_{w_0,w_1,...,w_D} M$$
+> **Subject to:**
+>$$\sum_{j=1}^{D} w_j^2 = 1$$
+>$$c_i(w_0 + w_1x_{i1} + ... + w_Dx_{iD}) > M, \forall i = 1,...,N$$
+>Where:
+> - $c_i$ is the class of example $i$ (either -1 or 1)
+> - $M$ is the margin
+> - $N$ is the number of training examples
+> - $D$ is the number of attributes
+> - $w_0,...,w_D$ are the weights defining the hyperplane
+> - $x_{i1},...,x_{iD}$ are the attribute values of example $i$
+
+### Soft margin
+
+**Problem:** Perfect separation is often impossible (the hyperplane may not exist)
+
+**Solution:** Find a hyperplane that *almost* separates the classes
+
+> Meaning: Allow some misclassification to get a better overall model
+
+**Parameter C:**
+> This parameter controls the trade-off between maximizing the margin and minimizing the classification error.
+> It is just a regularization parameter.
+- Small C = wider margin, more errors allowed
+- Large C = narrower margin, fewer errors allowed
+- **Critical to tune properly** to prevent overfitting
+
+**Benefits:**
+- More robust to noisy data
+- Better performance on most training observations
+- Handles non-separable datasets
+
+### Non-linear class boundaries
+
+**SVM advantage:** Avoids overfitting problems
+
+**Solution for non-linearity:** Use non-linear mapping
+
+**Process:**
+- Map data to new **feature space**
+- Linear boundary in feature space = non-linear boundary in original space
+- Feature space can have higher dimensions than original space
+
+**Result:** Complex decision boundaries become simple linear separators in transformed space
+![](images/machine-learning/kernel_trick_1.png)
+
+### The kernel trick
+
+**Problem:** Computing in high-dimensional feature space can be complex
+
+**Solution:** Use kernel functions to compute dot products in original space
+
+**How it works:**
+- Kernel functions compute similarity between vectors
+- No need to explicitly map data to feature space
+- All calculations done in original input space
+
+**Common kernel functions:**
+- **Linear:** $\langle x, x' \rangle$
+- **Polynomial:** $(\gamma\langle x, x' \rangle + r)^{dg}$
+- **RBF:** $\exp(-\gamma\|x - x'\|^2)$
+- **Sigmoid:** $\tanh(\langle x, x' \rangle + r)$
+
+![](images/machine-learning/kernel_trick_2.png)
+```python
+from sklearn import svm
+
+linear_svc = svm.SVC(kernel='linear')
+rbf_svc = svm.SVC(kernel='rbf')
+```
+**Parameters:** $\gamma$, $dg$, $r$ are specific hyperparameters for kernels (on [scikit-learn docs](https://scikit-learn.org/stable/modules/svm.html#svm-kernels) you can find details about each kernel and its parameters)
+
+**Rule of thumb:** Start with simpler kernels, then try more complex if needed
+### SVM complexity
+
+**Time complexity:** $O(D \cdot N^2)$ to $O(D \cdot N^3)$ (according to **libSVM**)
+- Depends on optimization library efficiency
+- Reduced for sparse data
+---
+
+### SVM summary
+
+**Advantages:**
+- Very accurate with complex decision boundaries
+- Theoretical learning model foundation
+- No local minima issues
+- No curse of dimensionality (no distance notion)
+- Provides confidence scores
+
+**Disadvantages:**
+- Slower learning than simpler methods (e.g., decision trees)
+- Requires parameter tuning
+- No direct probability estimates (requires expensive computation)

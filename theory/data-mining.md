@@ -1,15 +1,21 @@
-# Machine Learning and Data Mining 
-
+> 
+> **Subject**: ML slides pack - data-mining (whole folder) by Claudio Sartori
+>
+> **Course:** Artificial Intelligence - LM
+> 
+> **Department**: DISI (Department of Computer Science and Engineering) - University of Bologna, Italy
+>
+> **Author**: Roberto Zanolli
+> 
 ## Course Information
 **Instructor**: Claudio Sartori  
-**Department**: DISI (Department of Computer Science and Engineering) - University of Bologna, Italy
 
 ### Reference Materials
 - **[Alpaydin, 2014]**: Theoretical machine learning
 - **[Hastie et al., 2009]**: Statistical learning foundations  
 - **[Witten et al., 2016]**: Practical textbook with Weka software
 
-## Introduction to Machine Learning and Data Mining
+# Introduction to Machine Learning and Data Mining
 
 ### Historical Context
 - **1960s**: Early data collections and databases
