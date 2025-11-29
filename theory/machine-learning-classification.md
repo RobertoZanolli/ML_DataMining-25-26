@@ -1049,7 +1049,6 @@ There are either none or infinite such hyperplanes
 
 **Data:** Training set $X = \{(x_i, y_i)\}$  
 **Result:** Weight vector $w$ defining the hyperplane
-
 ![Perceptron Algorithm](images/machine-learning/perceptron_algorithm_1.jpeg)
 ---
 
@@ -1078,7 +1077,7 @@ The algorithm converges if the dataset is linearly separable, otherwise it does 
 For practical applicability it is necessary to set an upper bound to the iterations
 
 
-# Support vector machines (SVM) for binary classification
+## Support vector machines (SVM) for binary classification
 
 **Problems with high-dimensional data:**
 - method becomes intractable for reasonable number of variables
@@ -1205,9 +1204,7 @@ rbf_svc = svm.SVC(kernel='rbf')
 **Time complexity:** $O(D \cdot N^2)$ to $O(D \cdot N^3)$ (according to **libSVM**)
 - Depends on optimization library efficiency
 - Reduced for sparse data
----
-
-### SVM summary
+### SVM conclusion
 
 **Advantages:**
 - Very accurate with complex decision boundaries
@@ -1220,3 +1217,580 @@ rbf_svc = svm.SVC(kernel='rbf')
 - Slower learning than simpler methods (e.g., decision trees)
 - Requires parameter tuning
 - No direct probability estimates (requires expensive computation)
+---
+
+## Neural networks
+
+A neural network is a computational model that arranges many perceptron-like elements into a hierarchical structure. This architecture is designed to overcome the limitation of linear decision boundaries found in simpler models. The design is inspired by the complex interconnections of biological neurons in animal brains.
+
+### Biological inspiration and basic concepts
+
+In biological systems:
+*   A **neuron** functions as a signal processor with a specific activation threshold.
+*   The **signal transmission** from one neuron to another is not uniform; it is weighted, meaning some connections are stronger than others.
+*   These **weights are not static**; they can change over time, a process that is fundamental to learning.
+
+---
+
+## Multi-layer perceptron
+
+The multi-layer perceptron (MLP) is a specific type of artificial neural network that formalizes these biological concepts into a mathematical framework.
+
+*   The signals transmitted between artificial neurons are modeled as **real numbers**.
+*   The threshold behavior of a biological neuron is modeled using a **mathematical activation function**.
+
+### Activation function requirements
+
+For the network to be effectively trained using gradient-based methods, the ideal activation function should be:
+1.  **Continuous and differentiable.**
+2.  **Bounded** (both superiorly and inferiorly).
+3.  Ideally, its **derivative can be expressed in terms of the function itself**, which simplifies the underlying mathematics for learning.
+
+examples of activation functions:
+![](images/machine-learning/activation_functions_1.png.png)
+#### Sigmoid activation function
+
+The sigmoid function, also known as a **squashing function**, maps any real-valued number into a fixed range, typically $0, 1)$.
+
+*   It is **continuous, differentiable, and non-linear**.
+*   Its formula is:
+    > $$
+    f(x) = \frac{1}{1 + e^{-x}}
+    $$
+
+![](images/machine-learning/sigmoid.png.png)
+### The importance of non-linearity
+
+The introduction of non-linearity is critical. Results from the simple linear perceptron were often unsatisfactory, not only due to linear inseparability problems but also because of how they handle input.
+
+*   In a **linear system**, $f(x_1 + x_2) = f(x_1) + f(x_2)$. If $x_2$ represents noise, it is completely and directly transferred to the output, degrading performance.
+*   In a **non-linear system**, this additive property generally does not hold $(f(x_1 + x_2) \neq f(x_1) + f(x_2))$, allowing the model to filter and process signals in a more complex and useful way.
+*   Furthermore, the specific shape of the non-linear activation function can significantly influence the speed and stability of the learning process.
+
+---
+
+## Feed-forward multi-layered network architecture
+
+A standard feed-forward neural network is organized into sequential layers:
+
+1.  **Input layer:** This is the first layer, which receives the input features. There is typically **one input node for each dimension** in the training dataset.
+2.  **Hidden layer(s):** The input layer feeds its outputs into one or more hidden layers. Each connection has an associated **weight**. The number of nodes in the hidden layer is a key **hyperparameter** that must be chosen by the model designer.
+3.  **Output layer:** The final hidden layer feeds its outputs (again, via weighted connections) to the output layer. The number of nodes here is determined by the task:
+    *   For **two-class classification**, a single output node is often sufficient.
+    *   For **multi-class classification** with $k$ classes, it is common to have $k$ output nodes, one for each class.
+    
+![](images/machine-learning/feed_forward_1.png)
+## Network architecture details
+In a multi-layer perceptron, each node processes its inputs through a transfer function and produces an output. The mathematical representation is as follows:
+
+- $g(\cdot)$ represents the **transfer function** of the node, which could be the sigmoid function or another activation function
+- A **unitary input** $x_0$ is added to handle the bias term, similar to the linear perceptron model
+- Each connection between nodes has an associated **weight** $w_{ij}$ for the edge connecting node $i$ to node $j$
+
+### Feed-forward connectivity
+The feed-forward structure defines the specific pattern of connections between nodes:
+- **Layer-to-layer connections**: Edges only connect a node in one layer to a node in the immediately following layer
+- **Specific connections**: 
+  - Input layer nodes connect to hidden layer nodes
+  - Hidden layer nodes connect to output layer nodes
+- **Full connectivity**: Each node in a given layer is connected to **all nodes** in the subsequent layer
+
+### Signal flow characteristics
+
+This architecture creates a **unidirectional signal flow**:
+
+- Information flows exclusively from the input layer toward the output layer
+- There are **no feedback loops** or recurrent connections
+- The network forms a **directed acyclic graph** where signals propagate forward without cycling back to previous layers
+
+The output of a node $j$ in layer $l$ can be expressed as:
+$$
+y_j = g\left(\sum_{i=1}^{n} w_{ij}x_i + b_j\right)
+$$
+where $x_i$ are the inputs from the previous layer, $w_{ij}$ are the connection weights, $b_j$ is the bias term, and $g$ is the activation function.
+![](images/machine-learning/nn_training.png)
+
+## Training the neural network
+
+In analogy with learning in biological systems, training requires that examples are repeatedly presented to the network. The network's knowledge is encoded in the weight values, which are adjusted during training. However, this encoded knowledge appears as a structured set of real numbers that is not easily interpretable by humans.
+
+### Important training considerations
+
+Several critical factors must be addressed during neural network training:
+
+- **Weight correction computation**: Determining how to adjust weights to reduce errors
+- **Training data preparation**: 
+  - Standardize attributes to have **zero mean and unit variance**
+  - This normalization helps convergence and training stability
+- **Termination conditions**: Defining when to stop training
+- **Convergence uncertainty**: Convergence to an optimal solution is **not guaranteed**
+
+---
+
+## Computing weight corrections
+
+### Error calculation
+
+For a given node with input vector $x$ and desired output $y$, the error function is defined as:
+
+> $$E(w) = \frac{1}{2}(y - \text{Transfer}(w,x))^2 $$
+> where $w$ represents the input weight vector of the node and $\text{Transfer}(w,x)$ is the node's output given inputs $x$ and weights $w$.
+
+### Error function landscapes
+
+Error functions can have different characteristics:
+
+- **Convex error functions**: Have a single global minimum, making optimization straightforward
+- **Non-convex error functions**: Contain multiple local minima, making optimization more challenging and convergence to global optimum not guaranteed
+
+## Computing the gradient
+
+### Gradient descent approach
+
+The training process moves toward a (local) minimum of the error function by following the negative gradient direction. This requires computing partial derivatives of the error with respect to each weight.
+### Sigmoid derivative
+
+For the sigmoid activation function:
+
+$$
+\text{sgm}(x) = \frac{1}{1 + e^{-x}}
+$$
+
+The derivative has a convenient form:
+
+>$$\frac{d}{dx} \text{sgm}(x) = \frac{e^{-x}}{(1 + e^{-x})^2} = (1 - \text{sgm}(x)) \cdot \text{sgm}(x)$$
+
+This property simplifies the mathematics of gradient computation.
+
+### Weight update rule
+
+Weights are updated using the gradient descent rule:
+
+>$$w_{ij} \leftarrow w_{ij} - \lambda \frac{\partial E(w)}{\partial w_{ij}}$$
+>where:
+>- $\lambda$ is the **learning rate** constant
+>- The learning rate represents a tradeoff between convergence speed and precision
+>- The subtraction moves weights in the direction that reduces error
+
+### Backpropagation principle
+
+The derivatives for weights in earlier layers can be computed efficiently using the **chain rule** if the derivatives for subsequent layers are known. This forms the basis of the backpropagation algorithm.
+
+![](images/machine-learning/nn_training_2.png)
+
+### Local minima
+As with most gradient-based optimization methods, neural networks can converge to **local minima** rather than the global optimum. This occurs when the error landscape is non-convex with multiple valleys.
+
+### Overfitting
+Overfitting is a significant risk, particularly when the network architecture is **too complex** relative to the underlying decision problem. An over-parameterized network may memorize training data rather than learning generalizable patterns.
+
+## Regularization
+
+Regularization is a technique used across machine learning to improve model generalization by modifying the performance function. The standard approach uses the sum of squared errors on the training set, but regularization adds a correction term to smooth the fitting to data.
+
+**Key principle**: 
+- Improve performance by reducing a loss function (typically sum of squared errors)
+- Regularization corrects the loss function to prevent overfitting
+- The **amount of regularization must be carefully tuned** to balance bias and variance
+
+## Choosing activation functions: guidelines
+
+### ReLU (Rectified Linear Unit)
+- **Default choice** for most deep networks
+- **Fast convergence** due to linear, non-saturating behavior
+- **Risk**: "Dying ReLU" problem where neurons become permanently inactive
+- **Alternatives**: LeakyReLU or ELU if neuron death occurs
+### Sigmoid
+- Maps input to $(0, 1)$ range, suitable for probability outputs
+- **Vanishing gradient** problem for large $|x|$ values
+- **Use case**: Primarily in output layer for binary classification
+### Tanh (Hyperbolic Tangent)
+- Zero-centered output in $(-1, 1)$ range
+- Generally **preferable to sigmoid** for hidden layers in shallow networks
+- Still suffers from **vanishing gradients** in deep architectures
+### Softmax
+- Used exclusively in the **output layer for multi-class classification**
+- Converts raw scores into **normalized probability distributions**
+
+![](images/machine-learning/activation_functions_choice.png)
+
+## Choosing output activations by task
+
+### Regression tasks
+- **Goal**: Predict continuous values (e.g., temperature, price)
+- **Output activation**: Linear (none)
+- **Example**: $\hat{y} = Wx + b$
+### Binary classification
+- **Goal**: Output probability of positive class
+- **Output activation**: Sigmoid
+- **Example**: $\hat{y} = \sigma(Wx + b)$, where $\sigma(x) = \frac{1}{1 + e^{-x}}$
+### Multi-class classification
+- **Goal**: Probability distribution over multiple classes
+- **Output activation**: Softmax
+- **Example**: $\hat{y}_i = \frac{e^{z_i}}{\sum_j e^{z_j}}$
+### Multi-label classification
+- **Goal**: Independent binary predictions for multiple labels
+- **Output activation**: Sigmoid (per output node)
+- **Loss**: Binary cross-entropy per output unit
+
+**Summary**: Use ReLU (or variants) for hidden layers, and choose output activation based on task: linear for regression, sigmoid for binary classification, softmax for multi-class classification.
+
+
+> ***Universal approximation theorem***
+> **Core principle**
+> A feedforward neural network with:
+> - At least one hidden layer
+> - Non-linear activation function
+>
+> **Can approximate any continuous function on a bounded domain**.
+> So we can look at NN as general-purpose function approximators
+
+
+### Example: approximating $\sin(x)$
+
+The network learns $\sin(x)$ by observing input-output pairs without any trigonometric knowledge, demonstrating pattern learning from data.
+
+```python
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+import math
+import matplotlib.pyplot as plt
+
+# Generate training data for sin(x)
+xs = np.linspace(-math.pi, math.pi, 200).reshape(-1, 1)
+ys = np.sin(xs)
+
+# Define the neural network model
+model = keras.Sequential([
+    keras.layers.Dense(16, activation='tanh', input_shape=(1,)),  # Hidden layer with 16 neurons
+    keras.layers.Dense(1)  # Output layer for regression
+])
+
+# Compile the model with Adam optimizer and mean squared error loss
+model.compile(optimizer=keras.optimizers.Adam(0.01), loss='mse')
+
+# Train the model
+history = model.fit(xs, ys, epochs=2000, verbose=0)
+
+# Generate predictions
+ys_pred = model.predict(xs)
+
+# Plot sin(x) vs neural network approximation
+plt.figure()
+plt.plot(xs, ys, label='True sin(x)')
+plt.plot(xs, ys_pred, label='Neural network approximation')
+plt.legend()
+plt.savefig("sin_approx.png")
+
+# Plot training loss over epochs
+plt.figure()
+plt.plot(history.history['loss'])
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.savefig("../fig/sin_loss.png")
+```
+
+>In particular this snippet is the one responsible to create the hidden layer with 16 neurons with tanh activation function and the output one with only one neuron with no activatio function (it gives real value of output.) 
+```python
+	model = keras.Sequential([
+	    keras.layers.Dense(16, activation='tanh', input_shape=(1,)),
+	    keras.layers.Dense(1)
+	])
+```
+
+#### Computational flow
+1. **First layer**: $z_1 = xW_1 + b_1$ where $W_1$ has shape $(1,16)$ and $b_1$ has shape $(16)$  
+   $h = \tanh(z_1)$
+2. **Output layer**: $\hat{y} = hW_2 + b_2$ with $W_2$ of shape $(16,1)$ and $b_2$ scalar
+
+**Total parameters**: $(1 \cdot 16 + 16) + (16 \cdot 1 + 1) = 49$
+
+The hidden layer with $\tanh$ activation enables the network to construct non-linear mappings and approximate complex functions like $\sin(x)$.
+
+![](images/machine-learning/nn_example.png)
+
+## KNN Classifier (K Nearest Neighbours)
+
+The K-nearest neighbors (KNN) algorithm operates by retaining the entire training dataset as the model. When making predictions for new data points, the algorithm computes the similarity between the new sample and every instance in the training set.
+
+### Prediction process
+1. **Similarity computation**: Calculate the similarity between the new data point and each training instance using any appropriate similarity function
+2. **Neighbor selection**: Identify the $K$ entries in the training database that are closest to the new data point
+3. **Decision making**: Apply majority voting (for classification) or averaging (for regression) among the selected neighbors
+
+### Key parameters
+- **Number of neighbors ($K$)**: The number of closest training examples to consider for prediction
+- **Distance metric**: The function used to compute similarities between data points
+- **Mahalanobis distance**: Often provides good performance as it accounts for correlations in the data and is scale-invariant (look at the pdf proximity-measures)
+
+The algorithm's simplicity comes from storing all training data, with computational complexity primarily in the similarity calculations during prediction rather than during training.
+
+---
+## Loss functions
+
+## Definition of loss
+>A loss function (or cost function) measures how well a model's predictions match the actual target values. Formally, for a single example:
+> $$L(y, \hat{y})$$
+> where:
+> - $y$ is the true value (ground truth)
+> - $\hat{y}$ is the predicted value from the model
+> - $L$ quantifies the discrepancy between prediction and reality
+
+### Key concepts
+- **Purpose**: Provides a numerical score indicating prediction error - lower loss means better predictions
+- **Model learning**: The model learns by minimizing this loss during training
+- **Total loss**: For a dataset with $n$ examples: 
+  > $$L = \frac{1}{n}\sum_{i=1}^{n} L(y_i, \hat{y}_i)$$
+
+### Common loss functions
+**Regression** (continuous outputs):
+- **Mean Squared Error (MSE)**: $L(y, \hat{y}) = (y - \hat{y})^2$
+- **Mean Absolute Error (MAE)**: $L(y, \hat{y}) = |y - \hat{y}|$
+
+**Classification** (discrete outputs):
+> - **Cross-Entropy Loss**: $L(y, \hat{y}) = -\sum_c y_c \log(\hat{y}_c)$
+- **Hinge Loss**: Used in SVMs
+
+### Training process
+>The learning algorithm finds parameters $\theta$ that minimize the loss:
+>$$\theta^* = \arg \min_\theta L(\theta)$$
+
+This is typically done through gradient descent:
+- Compute $\nabla_\theta L$ (gradient of loss with respect to parameters)
+- Iteratively update: $\theta \leftarrow \theta - \alpha \nabla_\theta L$
+
+### Loss function vs. metric
+- **Loss function**: Used during training to guide optimization; must be differentiable
+- **Metric** (like accuracy): Used to measure performance; doesn't need to be differentiable
+
+**Why accuracy isn't used as loss**:
+- Non-differentiable (step function)
+- Small parameter changes often don't change accuracy
+- Gradient-based optimizers cannot use it
+
+### Cross-entropy loss
+**Intuitive idea**: Measures how "surprised" the model is by the true labels:
+- If model assigns high probability to correct class → low surprise → low cross-entropy
+- If model assigns low probability to correct class → high surprise → high cross-entropy
+
+**Formula**: For one sample with true class $y$ and predicted probability $q_y$:
+$$H(p,q) = -\log(q_y)$$
+
+**Example**: Cat vs. dog classifier
+- True label: "cat", Model: $P(\text{cat}) = 0.9$ → Cross-entropy $= -\log(0.9) = 0.105$
+- True label: "cat", Model: $P(\text{cat}) = 0.1$ → Cross-entropy $= -\log(0.1) = 2.302$
+
+## Multi-class classification strategies
+
+### Approaches for binary classifiers
+Some classifiers (e.g., SVM, linear perceptron) are inherently binary. Two main strategies extend them to multi-class:
+
+1. **Transform the training algorithm and model** (sometimes increases problem size)
+2. **Use multiple binary classifiers and combine results** (increases number of problems to solve)
+
+### One-vs-one (OVO) strategy
+- Consider all possible pairs of classes
+- Generate binary classifier for each pair: $C \times (C-1)/2$ pairs
+- Each binary problem uses only examples from the two selected classes
+- **Prediction**: Apply voting scheme - class with most votes wins
+
+### One-vs-rest (OVR) strategy
+- Consider $C$ binary problems where class $c$ is positive and all others are negative
+- Build $C$ binary classifiers
+- **Prediction**: Each classifier provides confidence score - class with highest score wins
+
+### OVO vs. OVR comparison
+- **OVO**: Higher number of problems, but each is smaller
+- **OVR**: Fewer problems, but intrinsically unbalanced (positive:negative ratio = 1:$(C-1)$)
+---
+## Ensemble methods
+
+Also known as classifier combination, ensemble methods involve training a set of base classifiers where the final prediction is obtained by aggregating the votes of the individual base classifiers. Ensemble methods consistently demonstrate better performance than single classifiers across various machine learning tasks.
+
+### Rationale for ensemble methods
+
+Ensemble methods are effective when two key conditions are met:
+
+1. The base classifiers are **independent** (make uncorrelated errors)
+2. The performance of each base classifier is **better than random choice**
+
+### Methods for creating ensemble classifiers
+
+#### By manipulating the training set
+
+**Bagging** (Bootstrap Aggregating):
+- Repeatedly samples training data with replacement using uniform probability distribution
+- Creates multiple diverse training subsets
+
+**Boosting**:
+- Iteratively changes the distribution of training examples
+- Forces base classifiers to focus on examples that are hard to classify
+- **AdaBoost**: Each base classifier's importance depends on its error rate
+
+#### By manipulating the input features
+
+- Subsets of input features are chosen randomly or using domain expertise
+- **Random Forest**: Uses decision trees as base classifiers with random feature subsets
+- Frequently produces excellent results in practice
+
+#### By manipulating the class labels
+
+Particularly useful when dealing with high numbers of classes:
+
+- For each base classifier, randomly partition class labels into two subsets $A_1, A_2$
+- Re-label the dataset according to these partitions  
+- Train binary classifiers on the relabeled data
+- During testing, when a subset is selected, all classes within it receive a vote
+- The class with the highest cumulative score wins the final prediction
+
+## Forest of randomised trees
+
+Random forests use perturb-and-combine techniques specifically designed for decision trees. A diverse set of classifiers is created by introducing randomness during the classifier construction process, with the key requirement that the classifiers must be independent.
+
+### Construction process
+- Each tree in the ensemble is built from a **bootstrap sample** (sample drawn with replacement) from the training set
+- When splitting nodes during tree construction, the best split is found from either:
+  - All input features, or
+  - A random subset of features of size `max_features`
+- The ensemble prediction is obtained by combining individual classifier predictions through voting or averaging
+
+### Bias-variance tradeoff
+
+**Bias**: The simplifying assumptions made by the model to make the target function easier to approximate  
+**Variance**: The amount that the estimate of the target function changes given different training data  
+**Bias-variance tradeoff**: The optimal balance between errors introduced by bias and variance
+
+*Analogy*: Bias vs variance is like skimming a text (high bias, low variance) versus memorizing a text (low bias, high variance)
+
+### Random forest benefits
+
+The two sources of randomness (bootstrap sampling and random feature subsets) serve to decrease the variance of the forest estimator:
+
+- Individual decision trees typically exhibit high variance and tend to overfit
+- Injected randomness creates decision trees with decoupled prediction errors
+- By averaging predictions, some errors cancel out
+- Random forests achieve reduced variance by combining diverse trees, sometimes with a slight increase in bias
+- In practice, the variance reduction is often significant, yielding an overall better model
+
+## Ensemble learning with boosting
+
+Boosting associates a weight with each training instance and trains different classifiers using those weights. The weights are modified iteratively according to classifier performance.
+
+### AdaBoost algorithm
+
+AdaBoost fits a sequence of weak learners on repeatedly modified versions of the data, with predictions combined through a weighted majority vote.
+
+**Initialization**: All weights $w_1, w_2, ..., w_N$ are set to $1/N$, so the first weak learner trains on the original data
+
+**Iterative process**:
+- Sample weights are individually modified for each successive iteration
+- The learning algorithm is reapplied to the reweighted data
+- Training examples that were incorrectly predicted in the previous step have their weights increased
+- Correctly predicted examples have their weights decreased
+
+As iterations proceed, difficult-to-predict examples receive ever-increasing influence, forcing each subsequent weak learner to concentrate on examples missed by previous ones.
+
+### Other boosting algorithms
+
+- **XGBoost (Extreme Gradient Boosting)**: Popular implementation designed for speed and performance
+- **LightGBM**: Microsoft's gradient boosting framework for efficient training on large datasets
+- **CatBoost**: Yandex's library that handles categorical features efficiently
+- **Gradient Boosting Machines**: General class of algorithms that build models stage-wise
+- **H2O.ai**: Open-source software for distributed gradient boosting
+- **TensorFlow Decision Forests**: Google's implementation of decision forests
+- **Sklearn Gradient Boosting**: Generalization of boosting to arbitrary differentiable loss functions
+
+---
+
+## XGBoost (eXtreme Gradient Boosting)
+
+### Core concept
+
+XGBoost is an ensemble learning method that combines many weak learners (decision trees) to create a strong predictor. Think of it as a committee of experts where each expert is relatively simple, each new expert focuses on correcting previous mistakes, and their combined opinion is highly accurate.
+
+### Sequential learning process
+
+XGBoost builds trees sequentially rather than independently:
+
+1. Start with a simple prediction (e.g., mean of training labels)
+2. Build a tree to predict the errors (residuals) of the current model
+3. Add this tree to the model with a small weight
+4. Repeat: each new tree focuses on what previous trees got wrong
+
+The final prediction is the sum of all tree predictions:
+>$$\hat{y} = \sum_{t=1}^{T} f_t(x)$$
+> where $f_t$ is the $t$-th tree and $T$ is the total number of trees.
+
+### Gradient boosting mechanism
+
+The algorithm uses gradient descent in function space:
+- Define a loss function $L(y, \hat{y})$ measuring prediction error
+- Each new tree approximates the negative gradient of the loss
+- This is equivalent to taking small steps toward minimizing error
+- Mathematically: fit tree to $-\frac{\partial L}{\partial \hat{y}}$
+
+### Classification with XGBoost
+
+**Binary classification**:
+1. Trees output real-valued scores, not probabilities
+2. Final score: $F(x) = \sum_{t=1}^{T} f_t(x)$
+3. Convert to probability using sigmoid: $P(y=1|x) = \frac{1}{1+e^{-F(x)}}$
+4. Predict class 1 if $P(y=1|x) > 0.5$
+
+**Multi-class classification**:
+- Build one set of trees per class
+- Use softmax to convert scores to probabilities
+- Predict the class with highest probability
+
+### XGBoost enhancements
+
+Beyond standard gradient boosting, XGBoost adds:
+
+**Regularization**:
+- Penalizes complex trees to prevent overfitting
+- Controls tree depth, number of leaves, and leaf weights
+
+**Smart tree building**:
+- Uses second-order gradients (Newton's method) for better optimization
+- Approximate split finding for faster training on large datasets
+
+**Systems optimization**:
+- Parallel processing for building trees
+- Cache-aware computation
+- Automatic handling of missing values
+
+### Key hyperparameters
+
+- **Number of trees ($T$)**: More trees = more complex model; too many causes overfitting
+- **Learning rate ($\eta$)**: Shrinks each tree's contribution; smaller values require more trees but generalize better
+- **Tree depth**: Controls complexity of individual trees; deeper trees capture more interactions
+- **Regularization parameters**: Control penalty on tree complexity
+
+### Practical advantages
+
+XGBoost frequently dominates on structured/tabular data because it:
+
+- Is highly accurate on medium-sized datasets
+- Handles non-linear relationships and interactions well
+- Is robust to outliers and irrelevant features
+- Has fast training compared to other ensemble methods
+- Works well out-of-the-box with minimal tuning
+
+**Use when**: Working with tabular data with mixed feature types, needing high accuracy with reasonable training time, or when deep learning would be overkill.
+
+### Practical tips
+
+>**Training strategy**:
+>1. Start with default parameters
+>2. Use cross-validation to tune hyperparameters
+>3. Common tuning sequence: number of trees → learning rate → tree depth → regularization
+>4. Monitor validation loss to detect overfitting
+>
+>**Watch for**:
+>- Overfitting with too many deep trees
+>- Class imbalance (use `scale_pos_weight` parameter)
+>- Memory usage on very large datasets
+>
+
+![](images/machine-learning/classifier_comparison.png)
