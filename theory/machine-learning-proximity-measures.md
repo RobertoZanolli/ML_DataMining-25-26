@@ -109,7 +109,11 @@ Variation of pairs of random variables
 
 ### Common properties of a distance
 
-1. **Positive definiteness:** $Dist(p, q) \\\\geq 0$ $\\\\forall p, q$ and $Dist(p, q) = 0$ if and only if $p = q$
+1. **Positive definiteness:**  
+$Dist(p, q) \geq 0 \quad \forall p, q$  
+$and$  
+$Dist(p, q) = 0$ $if$ $and$ $only$ $if$ $p = q$
+
 2. **Symmetry:** $Dist(p, q) = Dist(q, p)$
 3. **Triangle inequality:** $Dist(p, q) \leq Dist(p, r) + Dist(r, q)$  $,\forall p, q, r$
 
@@ -176,12 +180,12 @@ This approach works particularly well with Manhattan distance for sparse dataset
 
 ### Manhattan vs cosine distance: key differences
 
-| Manhattan distance | Cosine similarity |
-|-------------------|-------------------|
-| Measures absolute differences | Measures angle/direction |
-| Sensitive to magnitude | Magnitude-invariant |
-| Formula: $\sum_{i=1}^n x_i - y_i$	|Formula: $\frac{x \cdot y}{\|x\|\|y\|}$|
-| Range: $[0, \infty)$ | Range: $[-1, 1] $ |
+| Manhattan distance                | Cosine similarity                       |
+| --------------------------------- | --------------------------------------- |
+| Measures absolute differences     | Measures angle/direction                |
+| Sensitive to magnitude            | Magnitude-invariant                     |
+| Formula: $\sum_{i=1}^n x_i - y_i$ | Formula: $\frac{x \cdot y}{\|x\|\|y\|}$ |
+| Range: $[0, \infty)$              | Range: $[-1, 1]$                        |
 
 ---
 
