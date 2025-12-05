@@ -287,7 +287,7 @@ Splitting the dataset in two parts according to a threshold on a numeric attribu
 
 The weights are the relative sizes of the two parts.
 
-Let $d \in D$ be a real-valued attribute, let $t$ be a value of the domain of $d$, let $c$ be the class attribute.
+Let $d \in D$ be a real-valued attribute ($R$), let $t$ be a value of the domain of $d$, let $c$ be the class attribute.
 
 We define the entropy of $c$ w.r.t. $d$ with threshold $t$ as:
 
