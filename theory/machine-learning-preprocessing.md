@@ -11,14 +11,15 @@
 > - w.r.t means "with respect to"
 > 
 
+# Data pre-processing
+## Dealing with missing values in scikit-learn
 
 ```python
+#imports were omitted in slides but this should be the right ones
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 ```
-
-## Dealing with missing values in scikit-learn
 
 Scikit-learn provides various methods to handle missing values:
 - Removing rows or columns with missing values
@@ -27,7 +28,6 @@ Scikit-learn provides various methods to handle missing values:
 - Using indicators for missing values
 
 ### Removing rows or columns with missing values
-
 The simplest way to handle missing data is to remove rows or columns containing NaN values.
 
 Use `pandas.dropna()` for DataFrame preprocessing:
@@ -99,3 +99,396 @@ imputer = ColumnTransformer(
 
 X_imputed = imputer.fit_transform(X)
 ```
+
+## Type conversion
+
+```python
+ OneHotEncoder, OrdinalEncoder, Binarizer
+```
+## Why do we need type conversion?
+Many algorithms require numeric features:
+- Categorical features must be transformed into numeric
+- Ordinal features must be transformed into numeric, and the order must be preserved
+Classification requires a target with nominal values:
+- A numerical target can be discretised
+Discovery of association rules require boolean features:
+- A numerical feature can be discretised and transformed into a series of boolean features
+
+### The scikit-learn solution for type conversions
+### Binarization of discrete attributes
+Attribute $d$ allowing $V$ values → $V$ binary attributes.
+Example for "Color" feature:
+
+| Color | Color-Red | Color-Blue | Color-Green | Color-Orange | Color-Yellow |
+|-------|-----------|------------|-------------|--------------|--------------|
+| Red   | 1         | 0          | 0           | 0            | 0            |
+| Blue  | 0         | 1          | 0           | 0            | 0            |
+| Green | 0         | 0          | 1           | 0            | 0            |
+| Orange| 0         | 0          | 0           | 1            | 0            |
+| Yellow| 0         | 0          | 0           | 0            | 1            |
+
+### Nominal to numeric: One-Hot-Encoding
+- A feature with $V$ unique values is substituted by $V$ binary features, each corresponding to one of the unique values
+- If object $x$ has value $v$ in feature $d$, then the binary feature corresponding to $v$ has True for $x$, all other binary features have value False
+- True and False are represented as 1 and 0, therefore can be processed by procedures working only on numeric data
+```python
+from sklearn.preprocessing import OneHotEncoder
+```
+
+### Ordinal to numeric
+- The ordered sequence is transformed into consecutive integers
+- By default, the lexicographic order is assumed
+- The user can specify the proper order of the sequence
+Example: `awful, poor, ok, good, great` → `0, 1, 2, 3, 4`
+
+```python
+from sklearn.preprocessing import OrdinalEncoder
+```
+
+
+
+### Numeric to binary with threshold
+- Not greater than the threshold becomes zero
+- Greater than the threshold becomes one
+
+```python
+from sklearn.preprocessing import Binarizer
+```
+### Discretization/Reduction of the number of distinct values
+Some algorithms work better with discrete instead of continuous data:
+- A small number of distinct values can let patterns emerge more clearly
+- A small number of distinct values lets algorithms be less influenced by noise and random effects
+**Discretization:**
+- Continuous → Discrete (using thresholds, many options)
+- Binarization → single threshold
+- Discrete with many values → Discrete with less values (guided by domain knowledge)
+
+![](theory/images/Screenshot%202025-12-07%20alle%2000.44.08.png)
+
+### Numeric to k values
+The numbers are discretised into a sequence of integers 0 to $k-1$
+Several strategies are available:
+- `'uniform'`
+- `'quantile'`
+- `'kmeans'`
+```python
+from sklearn.preprocessing import KBinsDiscretizer
+```
+### Sampling
+
+For both preliminary investigation and final data analysis:
+**Statistician perspective:** obtaining the entire data set could be impossible or too expensive  
+**Data processing perspective:** processing the entire data set could be too expensive or time consuming
+
+1. Using a sample will work almost as well as using the entire data sets, if the sample is representative
+2. A sample is representative if it has approximately the same property (of interest) as the original set of data
+
+### Types of sampling
+1. **Simple random:** a single random choice of an object with given probability distribution
+2. **With replacement:** repetition of independent extractions of type 1
+3. **Without replacement:** repetition of extractions, extracted element is removed from the population
+4. **Stratified:** used to split the data set into subsets with homogeneous characteristics, the representativity is guaranteed inside each subset (typically requested in cross-validation)
+
+### Sample size
+Statistics provides techniques to assess:
+- Optimal sample size
+- Sample significativity
+Tradeoff between data reduction and precision
+
+### Sampling with/without replacement
+- They are nearly equivalent if sample size is a small fraction of the data set size
+- With replacement, in a small population a small subset could be underestimated
+- Sampling with replacement is:
+  - Much easier to implement
+  - Much easier to be interpreted from a statistical point of view
+  - Extractions are statistically independent
+  
+![](theory/images/Screenshot%202025-12-07%20alle%2000.48.47.png)
+
+As we can see in the example decreasing the sample size means loss of evidence.
+
+#### Probability of sampling at least one element for each class (with replacement)
+This is not related to the size of the dataset
+Example: 10 classes (A, B, C, D, E, F, G, H, I, J)
+
+This aspect becomes relevant, for example, in a supervised dataset with a high number of different values of the target.
+
+If the number of data elements is not big enough, it can be difficult to guarantee a stratified partitioning in train/test split or in cross-validation split.
+
+**Example:**  
+$N = 1000$, $C = 10$, test-set-size $= 300$, cross-validation-folds $= 10$
+
+The probability of folds without adequate representation of some classes becomes quite high.
+
+When designing the training processes it is necessary to consider those aspects. In the example, one could use only 3 folds in cross-validation.
+## Feature creation
+Feature creation is a crucial step in data mining - new features can capture more efficiently data characteristics. It involves transforming raw data into meaningful features that can improve predictive models.
+
+**Types of feature creation:**
+- **Feature extraction:** pixel picture with a face → eye distance, ...
+- **Mapping to a new space:** e.g. signal to frequencies with Fourier transform
+- **New features:** e.g. volume and weight to density
+
+### Examples of feature creation in finance
+##### Moving averages
+Calculate the average closing price of a stock over a specific time window (e.g., 10 days, 50 days).
+##### Volatility measures
+Compute metrics such as standard deviation or average true range to capture the level of price fluctuations.
+##### Relative strength index (RSI)
+Derive a momentum oscillator indicating overbought or oversold conditions in the market.
+##### Liquidity ratios
+Calculate ratios like bid-ask spread or trading volume to assess market liquidity.
+##### Fundamental analysis indicators
+Include financial metrics such as earnings per share (EPS), price-to-earnings (P/E) ratio, or debt-to-equity ratio.
+##### Market sentiment analysis
+Utilize sentiment scores from news articles, social media, or analyst reports to gauge market sentiment.
+##### Technical analysis patterns
+Identify chart patterns such as head and shoulders, double tops, or flags to predict future price movements.
+
+### Feature creation example: closing prices of a stock
+```python
+data = {
+    'Date': ['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04', '2022-01-05'],
+    'Close': [100, 102, 98, 105, 101]
+}
+
+# Create a DataFrame
+df = pd.DataFrame(data)
+
+# Feature 1: Moving Average (2 days)
+df['MA_2'] = df['Close'].rolling(window=2).mean()
+
+# Feature 2: Daily Price Change
+df['Price_Change'] = df['Close'].diff()
+
+# Feature 3: Daily Percentage Change
+df['Pct_Change'] = df['Close'].pct_change()
+
+# Feature 4: Relative Strength Index (RSI)
+df['RSI'] = 100 - (100 / (1 + (df['Close'].pct_change()).rolling(window=2)\
+    .apply(lambda x: x[x > 0].mean() / x[x < 0].mean())))
+```
+
+### Feature creation: closing prices of a stock 
+**Functions used:**
+- `rolling()` aggregates a number of consecutive rows specified with window size
+- `diff()` computes the difference of a feature in consecutive rows
+- `pct_change()` computes the percentage of change of a feature in consecutive rows
+- The aggregations introduce a number of nulls in the initial rows
+
+#### Examples of feature creation in a housing dataset
+##### Total area
+Calculate the sum of sizes of all rooms in the house.
+##### Price per square foot
+Divide the price of the house by its total area.
+##### Age of the house
+Calculate the age of each house by subtracting the year it was built from the current year.
+##### Neighborhood median income
+Include data on the median income of households in each neighborhood.
+##### Distance to city center
+Measure the distance of each house from the city center.
+##### Renovation status
+Create a binary feature indicating whether the house has been recently renovated.
+##### School district rating
+Include data on the quality of school districts in which the houses are located.
+##### Presence of amenities
+Create a categorical feature indicating the presence of amenities such as a swimming pool, garden, garage, etc.
+
+##  Data transformation
+**Why?**
+The features may have different scales - this can alter the results of many learning techniques. Some machine learning algorithms are sensitive to feature scaling while others are virtually invariant to it. There can also be outliers.
+
+### Gradient descent
+Machine learning algorithms that use gradient descent as an optimization technique require data to be scaled (e.g., linear regression, logistic regression, neural networks, etc.).
+![](theory/images/Screenshot%202025-12-07%20alle%2000.59.39.png)
+**Why scaling matters for gradient descent:**
+- The presence of feature value $X$ in the formula will affect the step size of the gradient descent
+- The difference in ranges of features will cause different step sizes for each feature
+- Similar ranges of the various features ensure that gradient descent moves smoothly toward the minima
+- Steps for gradient descent are updated at the same rate for all features
+
+### Feature transformation
+Map the entire set of values to a new set according to a function:
+$x^k$, $\log(x)$, $e^x$, $|x|$
+
+In general, these transformations change the distribution of values.
+
+### Standardization
+$$x \rightarrow \frac{x - \mu}{\sigma}$$
+
+**Key points:**
+- If original values have a Gaussian distribution, transformed values will have standard Gaussian distribution ($\mu = 0$, $\sigma = 1$)
+- This is translation and shrinking/stretching - no change in distribution shape
+- Centers data around zero with unit variance
+
+### MinMax scaling (a.k.a. Rescaling)
+The domains are mapped to standard ranges:
+
+**Range 0 to 1:**
+$x \rightarrow \frac{x - x_{\text{min}}}{x_{\text{max}} - x_{\text{min}}}$
+
+**Range -1 to 1:**
+$x \rightarrow \frac{x - \frac{x_{\text{max}} + x_{\text{min}}}{2}}{\frac{x_{\text{max}} - x_{\text{min}}}{2}}$
+
+**Key points:**
+- This is translation and shrinking/stretching - no change in distribution shape
+- Scales data to fit within a specific range
+- Useful when you need bounded values
+<div style="display: flex; gap: 10px;">
+  <img src="theory/images/Screenshot%202025-12-07%20alle%2001.00.23.png" width="300">
+  <img src="theory/images/Screenshot%202025-12-07%20alle%2001.00.30.png" width="300">
+</div>
+
+```python
+from sklearn.preprocessing import PowerTransformer
+
+pt = PowerTransformer(method=’box-cox’)
+X = pd.DataFrame(pt.fit_transform(X0), columns = X0.columns)
+```
+
+
+
+### Distance-based algorithms
+```python
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, Normalizer
+```
+
+KNN, K-Means, SVM, and similar algorithms use distances between points to determine their similarity.
+
+### Example: effect of scaling on distances 
+
+**Original data:**
+
+| Student | CGPA | Salary |
+|---------|------|--------|
+| A       | 3    | 60     |
+| B       | 3    | 40     |
+| C       | 4    | 40     |
+| D       | 4.5  | 50     |
+| E       | 4.2  | 52     |
+
+**Scaled data:**
+
+| Student | CGPA    | Salary   |
+|---------|---------|----------|
+| A       | -1.18431| 1.520013 |
+| B       | -1.18431| -1.100699|
+| C       | 0.41612 | -1.100699|
+| D       | 1.21635 | 0.209657 |
+| E       | 0.736212| 0.471728 |
+
+**Distances before scaling:**
+- $\text{distance}(A,B) = \sqrt{(40-60)^2 + (3-3)^2} = 20$
+- $\text{distance}(B,C) = \sqrt{(40-40)^2 + (4-3)^2} = 1$
+
+**Distances after scaling:**
+- $\text{distance}(A_s,B_s) = \sqrt{(-1.1+1.5)^2 + (-1.18+1.18)^2} = 2.6$
+- $\text{distance}(B_s,C_s) = \sqrt{(-1.1-1.1)^2 + (0.41+1.18)^2} = 1.59$
+
+Before scaling, the distances seemed very different due to the big numeric difference in the Salary attribute. After scaling, they become comparable.
+
+### Feature rescaling
+
+### Range-based scaling and standardization
+Both operate on single features:
+
+**Range-based scaling** stretches/shrinks and translates the range according to the feature's range (with variants):
+- Good when data are not Gaussian or we make no distribution assumptions
+- MinMaxScaler remaps to [0,1]
+
+**Standardization** subtracts the mean and divides by the standard deviation:
+- Resulting distribution has mean zero and unitary standard deviation
+- Good when the distribution is Gaussian
+- `sklearn.preprocessing.StandardScaler`
+
+### Range-based scalers in Scikit-Learn
+**MinMaxScaler** – remaps the feature to $[0,1]$
+
+**RobustScaler** – centering and scaling statistics based on percentiles:
+- Not influenced by a few very large marginal outliers
+- Resulting range of transformed feature values is larger than MinMaxScaler and StandardScaler
+
+### Normalization
+The term "normalization" has different meanings:
+- Frequently refers to MinMaxScaler
+- In Scikit-learn, `Normalizer` normalizes each data row to unit norm
+
+**RECAP**
+![](theory/images/Screenshot%202025-12-07%20alle%2001.31.19.png)
+
+### Workflow for feature transformation
+1. Transform the features as required for both train and test data  
+2. Fit and optimize the model(s)  
+3. Test  
+4. Possibly, use the original data to plot relevant views (e.g., to plot cluster assignments)
+
+## Imbalanced data in classification
+The performance on the minority class(es) has little impact on standard performance measures. The optimized model could be less effective on minority class(es).
+
+**Solutions:**
+- Some estimators allow weighting classes
+- Some performance measures account for the contribution of minority class(es)
+
+### Cost-sensitive learning
+Several classifiers have the parameter `class_weight`:
+- Changes the cost function to account for class imbalance
+- Equivalent to oversampling the minority class (repeating random examples) to produce a balanced training set
+```python
+from sklearn.utils import class_weight
+```
+
+### Undersampling
+Obtains a balanced training set by randomly reducing the number of examples of the majority class.
+**Caution:** Part of the knowledge embedded in the training set is dropped out.
+### Oversampling with SMOTE
+Synthetic Minority Oversampling Technique – a type of data augmentation for the minority class $c_{min}$:
+
+**Algorithm:**
+1. Choose from the training set a random example $x_r$ of class $c_{min}$
+2. Find the $k$ nearest neighbors of $x_r$ whose class is $c_{min}$
+3. Choose randomly one neighbor $x_{rn}$ from above
+4. Create new data element: $m = r \cdot \frac{x_r + x_{rn}}{2}$ (chosen randomly from segment connecting $x_r$ and $x_{rn}$ in feature space)
+
+### Workflow for undersampling/oversampling
+1. Resample the training set (apply SMOTE/undersampling)
+2. Fit and optimize the estimator
+3. Test the fitted estimator on the test set (untouched)
+
+```python
+from sklearn.feature_selection import SelectKBest, f_classif, RFE
+from sklearn.linear_model import Lasso, Ridge
+```
+
+## Feature selection
+
+> *"Sometimes less is better" (by Rohan Rao)*
+
+**Benefits of feature selection:**
+- Enables machine learning algorithms to train faster
+- Reduces model complexity and makes it easier to interpret
+- Improves accuracy if the right subset is chosen
+- Reduces overfitting
+
+**Note:** A specific selection action may obtain only one of the above effects.
+
+### Supervised or unsupervised feature selection?
+
+**Unsupervised:**
+- Many methods available (e.g., for clustering)
+- Feature transformation techniques like PCA can reduce the number of features
+
+**Supervised (considering relationship between attributes and class):**
+- **Filter methods** (Scheme-Independent Selection)
+- **Wrapper methods** (Scheme-Dependent Selection)
+- **Embedded methods** (built-in feature selection, e.g., Lasso and Ridge regression)
+
+### Problems with attributes
+##### Irrelevant attributes
+They can alter results of some mining algorithms, particularly with insufficient control of overfitting.
+##### Redundant attributes
+Some attributes can be strongly related to other useful attributes. Mining algorithms (e.g., Naive Bayes) are strongly influenced by strong correlations between attributes.
+##### Confounding attributes
+Some attributes can be misleading with hidden effects on the outcome variable.
+**Example:** In a study on weight gain considering physical exercise, age, and sex - sex can be confounding if the ages of males and females have very different ranges in the available data.
+##### Mixed effect attributes
+One attribute could be strongly related to the class in 65% of cases and random in the other cases.
